@@ -1,0 +1,55 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audio API - Stream</title>
+</head>
+<body>
+  <div class="main">
+    <div class="pagetitle tac flex coll aictr">
+      <div style="color: #a966e7">Endpoint - [GET] Stream</div>
+      <a href="/" style="font-size: 16px">Return to homepage</a>
+    </div>
+    <div class="bframe">
+      <h2>Retrieve audio stream for Spotify tracks</h2>
+      <h3>Powered by Youtube, ytdl-core and yt-search</h3>
+    </div>
+
+    <div class="btitle flex spbtw">
+      Request link
+      <span class="btt" onclick="copy('lyurl')">Copy</span>
+    </div>
+    <div class="bframe">
+      <span class="usn">GET </span>
+      <span id="lyurl">{serverOrigin}/api?id=[id]</span>
+    </div>
+
+    <div class="btitle flex spbtw">Response Type</div>
+    <div class="bframe">Audio Stream</div>
+
+    <!-- Example -->
+    <sep></sep>
+
+    <div class="btitle flex spbtw">
+      Example - String Theocracy by Mili
+      <span class="btt" onclick="copy('lyurla')">Copy</span>
+    </div>
+    <div class="bframe">
+      <span class="usn">GET </span>
+      <span id="lyurla">{serverOrigin}/api?id=7ETSUd74fhHvG2JldNVizV</span>
+    </div>
+
+    <div class="btitle flex spbtw">Response</div>
+    <div class="bframe flex jcctr aictr">
+      <audio
+        src="{serverOrigin}/api?id=7ETSUd74fhHvG2JldNVizV"
+        controls
+        style="width: calc(100% - 100px)"
+      ></audio>
+    </div>
+    <sep></sep>
+    <footer>
+      © 2019-2024 BadMusicApp, LCC. All right reserve
+      <div>Running on: {serverOrigin}</div>
+    </footer>
+  </div>
+</body>

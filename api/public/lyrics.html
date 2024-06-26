@@ -1,0 +1,301 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audio API - Lyrics</title>
+</head>
+<body>
+  <div class="main">
+    <div class="pagetitle tac flex coll aictr">
+      <div style="color: #a966e7">Endpoint - [GET] Lyrics</div>
+      <a href="/" style="font-size: 16px">Return to homepage</a>
+    </div>
+    <div class="bframe">
+      <h2>Retrieve lyrics for Spotify tracks</h2>
+      <h3>Powered by MusixMatch</h3>
+    </div>
+
+    <div class="btitle flex spbtw">
+      Request link
+      <span class="btt" onclick="copy('lyurl')">Copy</span>
+    </div>
+    <div class="bframe">
+      <span class="usn">GET </span>
+      <span id="lyurl">{serverOrigin}/api?type=lyrics&id=[id]</span>
+    </div>
+
+    <div class="btitle flex spbtw">
+      Response Type
+      <span class="btt" onclick="copy('lyres')">Copy</span>
+    </div>
+    <div class="bframe">
+      <pre id="lyres">
+type LyricsResponse = {
+    language: string;
+    id: string;
+    lines: {
+        text: string;
+        time: number;
+    }[];
+}</pre
+      >
+    </div>
+
+    <!-- Example -->
+    <sep></sep>
+
+    <div class="btitle flex spbtw">
+      Example - String Theocracy by Mili
+      <span class="btt" onclick="copy('lyurla')">Copy</span>
+    </div>
+    <div class="bframe">
+      <span class="usn">GET </span>
+      <span id="lyurla"
+        >{serverOrigin}/api?type=lyrics&id=7ETSUd74fhHvG2JldNVizV</span
+      >
+    </div>
+
+    <div class="btitle flex spbtw">
+      Response
+      <span class="btt" onclick="copy('lyresa')">Copy</span>
+    </div>
+    <div class="bframe">
+      <pre id="lyresa">
+{
+      "langauge": "en",
+      "id": "7ETSUd74fhHvG2JldNVizV",
+      "lines": [
+          {
+              "text": "Open the curtains",
+              "time": 0.54
+          },
+          {
+              "text": "Lights on",
+              "time": 3.5
+          },
+          {
+              "text": "Don't miss a moment of this experiment",
+              "time": 5.48
+          },
+          {
+              "text": "Oh, the book is strange",
+              "time": 9.77
+          },
+          {
+              "text": "Like clockwork orange",
+              "time": 11.72
+          },
+          {
+              "text": "Keep your eyes buttered 'til the end",
+              "time": 13.93
+          },
+          {
+              "text": "Which \"you\" are you going to be?",
+              "time": 20.12
+          },
+          {
+              "text": "Hm-mm-mm, inside the mirror do you see",
+              "time": 23.11
+          },
+          {
+              "text": "Someone else in that body?",
+              "time": 28.19
+          },
+          {
+              "text": "Dance for me",
+              "time": 31.21
+          },
+          {
+              "text": "One and two and three and turn around",
+              "time": 32.33
+          },
+          {
+              "text": "Sit like a doggy",
+              "time": 35.47
+          },
+          {
+              "text": "'Til I finish my read",
+              "time": 36.85
+          },
+          {
+              "text": "Cut it off, cut down your loss",
+              "time": 38.62
+          },
+          {
+              "text": "All that stubborn loyalty is gonna get you killed",
+              "time": 41.02
+          },
+          {
+              "text": "In a world built on convenient theories",
+              "time": 44.18
+          },
+          {
+              "text": "For all the puppets on TV",
+              "time": 47.09
+          },
+          {
+              "text": "There is comfort in the strings",
+              "time": 49.1
+          },
+          {
+              "text": "If you're gonna control me",
+              "time": 51.03
+          },
+          {
+              "text": "At least make it interesting theatrically",
+              "time": 52.56
+          },
+          {
+              "text": "How does it feel to be free?",
+              "time": 59.36
+          },
+          {
+              "text": "Hm-mm-mm, why don't you try it yourself?",
+              "time": 62.49
+          },
+          {
+              "text": "The gate opened on me",
+              "time": 67.62
+          },
+          {
+              "text": "So I leaped",
+              "time": 70.59
+          },
+          {
+              "text": "Down, down, and down I go",
+              "time": 71.88
+          },
+          {
+              "text": "I tell myself I'm a tough girl",
+              "time": 73.36
+          },
+          {
+              "text": "Down, down, and down I go",
+              "time": 75.63
+          },
+          {
+              "text": "I could never, ever, ever touch the soil",
+              "time": 77.43
+          },
+          {
+              "text": "My heart goes right",
+              "time": 80.54
+          },
+          {
+              "text": "My head goes left",
+              "time": 82.57
+          },
+          {
+              "text": "And end up on your bed",
+              "time": 84.55
+          },
+          {
+              "text": "Sure, I'll be your marionette",
+              "time": 88.39
+          },
+          {
+              "text": "Here, tug on my thread",
+              "time": 90.48
+          },
+          {
+              "text": "Spread me open for dolly pink, snow white artificial beauty",
+              "time": 92.43
+          },
+          {
+              "text": "Maybe we're all cold machines",
+              "time": 96.56
+          },
+          {
+              "text": "Stuffed in the human skin",
+              "time": 98.9
+          },
+          {
+              "text": "With human sins",
+              "time": 101.17
+          },
+          {
+              "text": "Sewed up by the gods of city",
+              "time": 102.38
+          },
+          {
+              "text": "Cut it off, you've already lost",
+              "time": 104.81
+          },
+          {
+              "text": "All that precious bravery is gonna get you hurt",
+              "time": 107.27
+          },
+          {
+              "text": "In a world that feeds on the minority",
+              "time": 110.4
+          },
+          {
+              "text": "May that self-centered belief lead you to peace",
+              "time": 113.05
+          },
+          {
+              "text": "If you're gonna replace me",
+              "time": 117.34
+          },
+          {
+              "text": "At least have the audacity to kill me thoroughly",
+              "time": 118.95
+          },
+          {
+              "text": "When does it end for me?",
+              "time": 125.57
+          },
+          {
+              "text": "Hm-mm-mm, I think I am done with everything",
+              "time": 128.68
+          },
+          {
+              "text": "Now I'm ready to leave",
+              "time": 133.84
+          },
+          {
+              "text": "Dragging out",
+              "time": 136.97
+          },
+          {
+              "text": "One line, two lines, three lines",
+              "time": 137.77
+          },
+          {
+              "text": "Connect our hands when I no longer can live on knowledge alone",
+              "time": 140.19
+          },
+          {
+              "text": "(You give me strength) Hopeful curiosity",
+              "time": 145.33
+          },
+          {
+              "text": "(Maybe there are still happy answers left for my discovery)",
+              "time": 148.53
+          },
+          {
+              "text": "What's the color of the electric sheep you see?",
+              "time": 152.48
+          },
+          {
+              "text": "And if you love me",
+              "time": 156.66
+          },
+          {
+              "text": "Can you love your everything too, for me?",
+              "time": 158.52
+          },
+          {
+              "text": "",
+              "time": 162.52
+          }
+        ],
+}</pre
+      >
+    </div>
+
+    <footer>
+      © 2019-2024 BadMusicApp, LCC. All right reserve
+      <div>Running on: {serverOrigin}</div>
+    </footer>
+  </div>
+</body>

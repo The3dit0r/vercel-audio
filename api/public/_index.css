@@ -1,0 +1,147 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap");
+
+body {
+  background-color: #131313;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0px;
+  margin: 0px;
+
+  width: 100vw;
+  height: 100vh;
+
+  font-family: "JetBrains Mono", "Consolas", monospace;
+  font-size: 14px;
+}
+
+pre {
+  font-family: "JetBrains Mono", "Consolas", monospace;
+  margin: 0px;
+  padding: 0px;
+
+  white-space: pre-wrap;
+}
+
+.main {
+  width: 60%;
+  height: 100%;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  display: block;
+
+  padding-right: 40px;
+}
+
+.pagetitle {
+  font-size: 3em;
+  font-weight: 800;
+
+  display: block;
+  padding: 30px;
+}
+
+.bframe {
+  width: calc(100% - 44px);
+  min-height: 20px;
+  padding: 20px;
+
+  border: 2px solid #fff;
+  display: block;
+}
+
+.btitle {
+  font-weight: bold;
+  font-size: 1.2em;
+
+  margin: 30px 0 10px 0;
+}
+
+.tac {
+  text-align: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.aictr {
+  align-items: center;
+}
+
+.jcctr {
+  justify-content: center;
+}
+
+.spbtw {
+  justify-content: space-between;
+}
+
+.coll {
+  flex-direction: column;
+}
+
+.flexx {
+  flex: 1;
+}
+
+.bframe.btt:hover {
+  border-color: #ff0;
+  cursor: pointer;
+}
+
+.btt:hover {
+  color: #ff0;
+  cursor: pointer;
+}
+
+a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #ff0;
+}
+
+.usn {
+  user-select: none;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+div::-webkit-scrollbar {
+  width: 10px;
+  height: 5px;
+}
+
+div::-webkit-scrollbar-thumb {
+  background-color: #fff;
+}
+
+sep {
+  display: block;
+  height: 50px;
+}
+
+.cyan {
+  /* color: cyan; */
+  color: #1b6fc2;
+}
+
+footer {
+  padding: 30px;
+  text-align: center;
+
+  border-top: 2px solid #fff;
+  margin-top: 50px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
