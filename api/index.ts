@@ -9,15 +9,29 @@ import ytSearch from "yt-search";
 
 import MusixMatch from "./lyric_module";
 import util from "util";
-import fs from "fs";
+import publicFiles from "./public";
 
 const SpotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT,
   clientSecret: process.env.SECRET,
-  redirectUri: "http://localhost:3000",
+  redirectUri: "http://localhost:4040",
 });
 
 const musixApi = new MusixMatch(process.env.MMTOKEN?.split(","));
+const PROTOCOL = process.env.PROTOCOL || "http";
+
+const fs = {
+  readFileSync: (path: string) => {
+    console.log("Requesting", path);
+
+    if (!publicFiles[path])
+      throw new Error(
+        "Public string for " + path + " does not exist, have you rebuilt it?"
+      );
+
+    return publicFiles[path];
+  },
+};
 
 // const StreamManager: StreamManagerData = {
 //   data: {
@@ -49,22 +63,19 @@ const musixApi = new MusixMatch(process.env.MMTOKEN?.split(","));
 // };
 
 function getStyle() {
-  const file = fs.readFileSync(__dirname + "/public/_index.css", {
-    encoding: "utf-8",
-  });
+  const file = fs.readFileSync("/_index.css");
   return `<style>${file}</style>`;
 }
 
 function getScript() {
-  const file = fs.readFileSync(__dirname + "/public/_index.js", {
-    encoding: "utf-8",
-  });
+  const file = fs.readFileSync("/_index.js");
   return `<script>${file}</script>`;
 }
 
 async function fetchToken() {
   const newTOKEN = await SpotifyApi.clientCredentialsGrant();
   const token = newTOKEN.body.access_token;
+  // console.log(newTOKEN);
 
   SpotifyApi.setAccessToken(token);
   return newTOKEN;
@@ -115,14 +126,10 @@ async function handleHTML(req: VercelRequest, res: VercelResponse) {
   const path = req.url === "/" ? "/index" : req.url;
 
   try {
-    data[1] = fs.readFileSync(__dirname + "/public" + path + ".html", {
-      encoding: "utf-8",
-    });
+    data[1] = fs.readFileSync(path + ".html");
   } catch (err) {
     data[1] = fs
-      .readFileSync(__dirname + "/public/404.html", {
-        encoding: "utf-8",
-      })
+      .readFileSync("/404.html")
       .replace("{errorMessage}", util.format(err))
       .replace("{date}", new Date().toLocaleString());
   }
@@ -132,8 +139,62 @@ async function handleHTML(req: VercelRequest, res: VercelResponse) {
     data
       .join("")
       .split("{serverOrigin}")
-      .join(req.headers.host || "{serverOrigin}")
+      .join(PROTOCOL + "://" + req.headers.host || "{serverOrigin}")
   );
+}
+
+async function handleAPI(req: VercelRequest, res: VercelResponse) {
+  const { type, query: rawQuery } = req.query;
+  const query = joinString(rawQuery);
+
+  console.log(type);
+
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  switch (type) {
+    case "search": {
+      await fetchToken();
+
+      // const yt = ytSearch(query);
+      const sp = SpotifyApi.search(query, [
+        "album",
+        "playlist",
+        "track",
+        "artist",
+      ]);
+
+      const result = await Promise.all([, sp]);
+      res.json(result[1]);
+
+      break;
+    }
+
+    case "album": {
+      await fetchToken();
+
+      const data = await SpotifyApi.getAlbum(query);
+      res.json(data.body);
+
+      break;
+    }
+
+    case "album_tracks": {
+      const { limit, offset } = req.query;
+
+      await fetchToken();
+      const data = await SpotifyApi.getAlbumTracks(query, {
+        limit,
+        offset,
+      } as any);
+      res.json(data.body);
+
+      break;
+    }
+
+    default: {
+      res.status(400).send({ failed: true, message: "Method not found" });
+    }
+  }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -147,7 +208,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   console.log(path);
 
-  if (!path.startsWith("/api")) {
+  if (path.startsWith("/api")) {
+    return handleAPI(req, res);
+  }
+
+  if (!path.startsWith("/audio")) {
     return handleHTML(req, res);
   }
 
