@@ -10,6 +10,7 @@ import ytSearch from "yt-search";
 import MusixMatch from "./lyric_module";
 import util from "util";
 import publicFiles from "./public";
+import { getStreamID, saveStreamID } from "./storage";
 
 const SpotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT,
@@ -20,6 +21,9 @@ const SpotifyApi = new SpotifyWebApi({
 const musixApi = new MusixMatch(process.env.MMTOKEN?.split(","));
 const PROTOCOL = process.env.PROTOCOL || "http";
 
+const buildVersion =
+  process.env.APPLICATION_VERSION || new Date().toUTCString();
+
 const fs = {
   readFileSync: (path: string) => {
     console.log("Requesting", path);
@@ -29,7 +33,10 @@ const fs = {
         "Public string for " + path + " does not exist, have you rebuilt it?"
       );
 
-    return publicFiles[path];
+    return publicFiles[path].replace(
+      "{footer}",
+      publicFiles["/footer.html"] || ""
+    );
   },
 };
 
@@ -126,7 +133,9 @@ async function handleHTML(req: VercelRequest, res: VercelResponse) {
   const path = req.url === "/" ? "/index" : req.url;
 
   try {
-    data[1] = fs.readFileSync(path + ".html");
+    data[1] = fs
+      .readFileSync(path + ".html")
+      .replace("{buildVersion}", buildVersion);
   } catch (err) {
     data[1] = fs
       .readFileSync("/404.html")
@@ -218,8 +227,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     await fetchToken();
-    const { name, artists, external_ids } = (await SpotifyApi.getTrack(sid))
-      .body;
+    const {
+      name,
+      artists,
+      external_ids,
+      id: trackID,
+    } = (await SpotifyApi.getTrack(sid)).body;
 
     if (type === "lyrics") {
       // #region Lyrics
@@ -250,12 +263,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // #region Stream
-    const query = `${name} - ${artists.map((a) => a.name).join(", ")}`;
-    /* - */ console.log("Track retrieve:", query);
+    let id = await getStreamID(trackID);
 
-    const { videos = [] } = await ytSearch(query);
-
-    const id = videos[0].videoId;
+    if (!id) {
+      const query = `${name} - ${artists.map((a) => a.name).join(", ")}`;
+      /* - */ console.log("Track retrieve:", query);
+      const { videos = [] } = await ytSearch(query);
+      id = videos[0].videoId;
+      saveStreamID(trackID, id);
+    }
     /* - */ console.log("Stream ID:", id);
 
     const result = await getYoutubeData(id);
@@ -269,7 +285,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const chunkSize =
         !isNaN(end) && end < contentLength
           ? end - start + 1
-          : contentLength - start;
+          : Math.min(4 * 1e6, contentLength - start);
 
       const header = {
         "Content-Range": `bytes ${start}-${
@@ -293,7 +309,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         format: result.format,
         range: {
           start: 0,
-          end: Math.min(Number.parseInt(result.format.contentLength), 2000),
+          end: Math.min(
+            Number.parseInt(result.format.contentLength),
+            0.3 * 1e6
+          ),
         },
       }).pipe(res);
     }

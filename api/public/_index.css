@@ -90,6 +90,10 @@ pre {
   flex: 1;
 }
 
+.btt {
+  user-select: none;
+}
+
 .bframe.btt:hover {
   border-color: #ff0;
   cursor: pointer;
