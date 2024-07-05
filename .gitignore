@@ -37,3 +37,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 .env
+
+# Branch dependant info
+# **/.branch_dependant.*.ts
