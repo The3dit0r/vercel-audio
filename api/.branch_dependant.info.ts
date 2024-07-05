@@ -3,6 +3,7 @@ const APP_INFO = {
   BRANCH: "beta",
 
   NAME: "Audio API",
+  PROTOCOL: process.env["PROTOCOL"] || "http",
 };
 
 export default APP_INFO;

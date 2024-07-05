@@ -4,7 +4,7 @@ import { fetchToken, musixApi, SpotifyApi } from "./public_api";
 
 const version = process.env.APPLICATION_VERSION;
 
-export async function handleGETRequest(
+export async function handleAPIRequest(
   req: VercelRequest,
   res: VercelResponse
 ) {
