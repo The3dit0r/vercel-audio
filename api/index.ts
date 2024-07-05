@@ -1,16 +1,15 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import type { YoutubeStream } from "./type";
+
+import { handleCatch, joinString } from "./util";
+import util from "util";
 
 import ytdl from "ytdl-core";
-import { handleCatch, joinString } from "./util";
-
 import ytSearch from "yt-search";
 
-import util from "util";
-import publicFiles from "./public";
 import { getStreamID, saveStreamID } from "./storage";
 import { fetchToken, getYoutubeData, SpotifyApi } from "./public_api";
 import { handleGETRequest } from "./method_get";
+import publicFiles from "./public";
 
 const PROTOCOL = process.env.PROTOCOL || "http";
 

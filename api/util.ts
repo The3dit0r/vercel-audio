@@ -41,4 +41,26 @@ function handleCatch(
   res.status(statusCode).send({ ...message, failed: true, method });
 }
 
-export { joinString, convertType, handleCatch };
+function generateErrorCode(
+  status: number,
+  message: string,
+  optionalProp?: Record<string, any>
+) {
+  return {
+    body: {
+      error: {
+        message: message,
+        status: status,
+
+        ...optionalProp,
+
+        manual: true,
+        timestamp: new Date().getTime(),
+      },
+    },
+
+    statusCode: status,
+  };
+}
+
+export { joinString, convertType, handleCatch, generateErrorCode };

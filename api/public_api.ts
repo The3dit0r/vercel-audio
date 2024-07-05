@@ -1,5 +1,8 @@
 import SpotifyWebApi from "spotify-web-api-node";
 import MusixMatch from "./lyric_module";
+import ytdl from "ytdl-core";
+
+import { YoutubeStream } from "./type";
 
 const SpotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT,
