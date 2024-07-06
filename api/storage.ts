@@ -5,11 +5,9 @@ async function saveStreamID(track: string, stream: string) {
   if (Object.keys(exceptions).includes(track)) return exceptions[track];
 
   try {
-    const results = await kv.set(track, stream, { ex: 60 * 10 });
+    const results = await kv.set(track, stream);
     return results;
-  } catch (err: any) {
-    console.log(err);
-  }
+  } catch (err: any) {}
 }
 
 async function getStreamID(track: string) {

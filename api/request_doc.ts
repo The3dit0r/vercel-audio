@@ -6,8 +6,6 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 
 const fs = {
   readFileSync: (path: string) => {
-    console.log("Requesting", path);
-
     if (!publicFiles[path])
       throw new Error(
         "Public string for " + path + " does not exist, have you rebuilt it?"
@@ -34,8 +32,6 @@ export async function handleHTMLRequest(
   req: VercelRequest,
   res: VercelResponse
 ) {
-  console.log("Documentation requested");
-
   const data = [
     '<!DOCTYPE html><html lang="en"><html>',
     "",

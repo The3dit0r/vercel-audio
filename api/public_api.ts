@@ -1,6 +1,8 @@
 import SpotifyWebApi from "spotify-web-api-node";
-import MusixMatch from "./lyric_module";
 import ytdl from "ytdl-core";
+import { kv } from "@vercel/kv";
+
+import MusixMatch from "./lyric_module";
 
 import { YoutubeStream } from "./type";
 
@@ -13,12 +15,26 @@ const SpotifyApi = new SpotifyWebApi({
 const musixApi = new MusixMatch(process.env.MMTOKEN?.split(","));
 
 async function fetchToken() {
+  const oldTokenRaw = String(await kv.get("SP_ACCESS_TOKEN")) || "";
+  const oldToken = oldTokenRaw.split(":");
+
+  if (oldToken[0]) {
+    if (parseInt(oldToken[1]) > new Date().getTime()) {
+      SpotifyApi.setAccessToken(oldToken[0]);
+      return oldToken[0];
+    }
+  }
+
   const newTOKEN = await SpotifyApi.clientCredentialsGrant();
   const token = newTOKEN.body.access_token;
-  // console.log(newTOKEN);
+
+  const expires_at = new Date().getTime() + newTOKEN.body.expires_in * 1000;
+  const saveString = `${token}:${expires_at}`;
 
   SpotifyApi.setAccessToken(token);
-  return newTOKEN;
+  kv.set("SP_ACCESS_TOKEN", saveString);
+
+  return token;
 }
 
 async function getYoutubeData(id: string): Promise<YoutubeStream> {
@@ -32,8 +48,6 @@ async function getYoutubeData(id: string): Promise<YoutubeStream> {
     (a, b) =>
       Number.parseInt(b.contentLength) - Number.parseInt(a.contentLength)
   );
-
-  // console.log(audios.map((a) => a.contentLength));
 
   return /*StreamManager.setYTID*/ {
     type: "ytid",

@@ -1,3 +1,4 @@
+import util from "util";
 import { VercelResponse } from "@vercel/node";
 
 function joinString(input: string | string[] | undefined) {
@@ -12,31 +13,13 @@ function joinString(input: string | string[] | undefined) {
   return input.join("");
 }
 
-function convertType(input: string | string[]): "lyrics" | "stream" {
-  const filtered = joinString(input).toLowerCase();
-
-  switch (filtered) {
-    case "lyrics": {
-      return "lyrics";
-    }
-
-    case "stream": {
-      return "stream";
-    }
-
-    default: {
-      return "stream";
-    }
-  }
-}
-
 function handleCatch(
   err: any,
   res: VercelResponse,
   method: string = "unknown"
 ) {
   const statusCode = err.statusCode || 500;
-  const message = err.body || { err };
+  const message = err.body || { err: util.format(err) };
 
   res.status(statusCode).send({ ...message, failed: true, method });
 }
@@ -63,4 +46,4 @@ function generateErrorCode(
   };
 }
 
-export { joinString, convertType, handleCatch, generateErrorCode };
+export { joinString, handleCatch, generateErrorCode };

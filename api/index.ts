@@ -18,8 +18,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const range = req.headers.range;
   const path = req.url || "/";
 
-  console.log(path);
-
   if (path.startsWith("/api")) {
     return handleAPIRequest(req, res);
   }
@@ -33,7 +31,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const {
       name,
       artists,
-      external_ids,
       id: trackID,
     } = (await SpotifyApi.getTrack(sid)).body;
 
@@ -42,12 +39,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!id) {
       const query = `${name} - ${artists.map((a) => a.name).join(", ")}`;
-      /* - */ console.log("Track retrieve:", query);
       const { videos = [] } = await ytSearch(query);
       id = videos[0].videoId;
       saveStreamID(trackID, id);
     }
-    /* - */ console.log("Stream ID:", id);
 
     const result = await getYoutubeData(id);
 
@@ -69,6 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         "Accept-Ranges": "bytes",
         "Content-Length": chunkSize,
         "Content-Type": 'audio/webm; codecs="opus"',
+        "Cache-Control": "max-age=3600",
       };
 
       res.writeHead(206, header);
@@ -77,8 +73,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         format: result.format,
         range: { start, end },
       }).pipe(res);
-
-      console.log(header, result.format.mimeType);
     } else {
       ytdl(result.id, {
         format: result.format,
@@ -91,6 +85,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         },
       }).pipe(res);
     }
+
+    console.log("AUDIO: ", (req.url || id) + " - " + result.id);
     // } else {
     //   const newRes = { ...result };
     // delete newRes.stream;

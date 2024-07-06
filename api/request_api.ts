@@ -8,19 +8,20 @@ export async function handleAPIRequest(
   req: VercelRequest,
   res: VercelResponse
 ) {
-  const { type: rawType, query: rawQuery } = req.query;
+  const { endpoint: rawType, q: rawQuery } = req.query;
 
   const type = joinString(rawType);
   const query = joinString(rawQuery);
 
-  // console.log(type);
+  const { origin } = req.headers;
 
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET");
+  res.setHeader("Access-Control-Allow-Origin", origin || "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Cache-Control", "max-age=3600");
 
   try {
     const typeCase = {
-      search: async () => {
+      search: async function () {
         await fetchToken();
 
         // const yt = ytSearch(query);
@@ -32,10 +33,12 @@ export async function handleAPIRequest(
         ]);
 
         const result = await Promise.all([, sp]);
-        res.json(result[1]);
+        res.setHeader("Cache-Control", "max-age=300");
+
+        res.json(result[1].body);
       },
 
-      lyrics: async () => {
+      lyrics: async function () {
         const { id } = getIDFromQuery(req);
 
         await fetchToken();
@@ -43,8 +46,6 @@ export async function handleAPIRequest(
 
         const isrc = external_ids.isrc;
         const lyrics = await musixApi.getSubtitleLyrics(isrc);
-
-        console.log("Fetching lyrics:", id, "-", isrc);
 
         const data = {
           langauge: lyrics.subtitle_language,
@@ -60,7 +61,7 @@ export async function handleAPIRequest(
         res.json(data);
       },
 
-      album: async () => {
+      albums: async function () {
         const { id } = getIDFromQuery(req);
         await fetchToken();
 
@@ -68,7 +69,7 @@ export async function handleAPIRequest(
         res.json(body);
       },
 
-      album_tracks: async () => {
+      "albums-tracks": async function () {
         const { id, limit, offset } = getIDFromQuery(req);
         await fetchToken();
 
@@ -80,7 +81,7 @@ export async function handleAPIRequest(
         res.json(body);
       },
 
-      playlist: async () => {
+      playlists: async function () {
         const { id } = getIDFromQuery(req);
         await fetchToken();
 
@@ -88,7 +89,7 @@ export async function handleAPIRequest(
         res.json(body);
       },
 
-      playlist_tracks: async () => {
+      "playlists-tracks": async function () {
         const { id, limit, offset } = getIDFromQuery(req);
         await fetchToken();
 
@@ -96,7 +97,7 @@ export async function handleAPIRequest(
         res.json(d.body);
       },
 
-      artist: async () => {
+      artists: async function () {
         const { id } = getIDFromQuery(req);
         await fetchToken();
 
@@ -104,7 +105,7 @@ export async function handleAPIRequest(
         res.json(body);
       },
 
-      artist_albums: async () => {
+      "artists-albums": async function () {
         const { id, limit, offset } = getIDFromQuery(req);
         await fetchToken();
 
@@ -112,7 +113,15 @@ export async function handleAPIRequest(
         res.json(d.body);
       },
 
-      artist_related: async () => {
+      "artists-top-tracks": async function () {
+        const { id } = getIDFromQuery(req);
+        await fetchToken();
+
+        const d = await SpotifyApi.getArtistTopTracks(id, "VN");
+        res.json(d.body);
+      },
+
+      "artists-related-artists": async function () {
         const { id } = getIDFromQuery(req);
         await fetchToken();
 
@@ -120,14 +129,17 @@ export async function handleAPIRequest(
         res.json(d.body);
       },
 
-      recommendation: async () => {
+      recommendations: async function () {
         const { seed_tracks, seed_artists, limit } = parseVercelQuery(req);
         await fetchToken();
 
+        const tracks = seed_tracks.split(",");
+
         const d = await SpotifyApi.getRecommendations({
-          seed_artists,
-          seed_tracks,
-          limit: parseInt(limit || "20"),
+          // seed_artists,
+          seed_tracks: tracks.slice(0, 3),
+          market: "VN",
+          limit: 20,
         });
         res.json(d.body);
       },
@@ -136,9 +148,10 @@ export async function handleAPIRequest(
     const execFunc = typeCase[type];
 
     if (execFunc) {
+      console.log("DATA: " + req.url || "/" + type);
       execFunc();
     } else {
-      res.send({
+      res.status(404).send({
         available: Object.keys(typeCase),
         version,
         timestamp: new Date().toUTCString(),
